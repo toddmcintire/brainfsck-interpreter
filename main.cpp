@@ -3,12 +3,10 @@
 #include <vector>
 #include <emscripten/bind.h>
 
-using namespace std;
 
-
-vector<unsigned int> build_bracket_map(string& program) {
-	vector<unsigned int> map(program.size(), 0);
-	vector<unsigned int> stack;
+std::vector<unsigned int> build_bracket_map(std::string& program) {
+	std::vector<unsigned int> map(program.size(), 0);
+	std::vector<unsigned int> stack;
 	
 	for (int i=0; i<program.size(); i++) {
 		
@@ -25,7 +23,7 @@ vector<unsigned int> build_bracket_map(string& program) {
 			//cout << "R back\n";
 			//access last element
 			if (stack.empty()) {
-				cout << "unmatched ]\n";
+				std::cout << "unmatched ]\n";
 			} else {
 				unsigned int  open = stack.back();
 				stack.pop_back();
@@ -39,21 +37,22 @@ vector<unsigned int> build_bracket_map(string& program) {
 	}
 
 	if (!stack.empty()) {
-		cout << "unmatched [\n";
+		std::cout << "unmatched [\n";
 		abort();
 	}
 
 	return map;
 }
 
-std::string runInterperter() {
-    std::string test = R"(>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.)";
-    vector<unsigned char> tape(30000, 0);
+std::string runInterperter(std::string input) {
+    //std::string test = R"(>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.)";
+    std::string test = input;
+    std::vector<unsigned char> tape(30000, 0);
     unsigned int dp = 0;
     unsigned int pc = 0;
     std::string output = "";
 
-    vector<unsigned int> map = build_bracket_map(test);
+    std::vector<unsigned int> map = build_bracket_map(test);
 
     while (pc < test.size()) {
         //cout << test[pc] << "\n";
@@ -93,7 +92,7 @@ std::string runInterperter() {
         pc++;
     }
     output = output + "\n";
-    cout << output;
+    std::cout << output;
     return output;
 }
 
