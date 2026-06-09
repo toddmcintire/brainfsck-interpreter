@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
 
 
 std::vector<unsigned int> build_bracket_map(std::string& program) {
@@ -45,13 +46,15 @@ std::vector<unsigned int> build_bracket_map(std::string& program) {
 }
 
 std::string runInterperter(std::string input) {
-    //std::string test = R"(>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.)";
     std::string test = input;
     std::vector<unsigned char> tape(30000, 0);
     unsigned int dp = 0;
     unsigned int pc = 0;
     std::string output = "";
-
+    std::string inputString;
+    int parsed_value;
+    unsigned char casted;
+    
     std::vector<unsigned int> map = build_bracket_map(test);
 
     while (pc < test.size()) {
@@ -73,7 +76,16 @@ std::string runInterperter(std::string input) {
                 output = output + static_cast<char>(tape[dp]);
                 break;
             case ',':
-                //TODO: input
+                //gets input
+                inputString = static_cast<const char*>(EM_ASM_PTR({
+                    var jsString = prompt("enter input character","");
+                    return stringToNewUTF8(jsString);
+                }));
+
+                //set input at current cell
+                casted = static_cast<unsigned char>(inputString[0]);
+                tape[dp] = casted;
+//                std::cout << static_cast<int>(casted) << " \n";
                 break;
             case '[':
                 if (tape[dp] == 0) {
@@ -92,7 +104,7 @@ std::string runInterperter(std::string input) {
         pc++;
     }
     output = output + "\n";
-    std::cout << output;
+    //std::cout << output;
     return output;
 }
 
